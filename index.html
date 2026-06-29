@@ -137,7 +137,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .page{display:none;flex:1;padding:1.5rem}.page.active{display:block}
 
 /* KPI CARDS */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:1.5rem}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:1.5rem}
 .kpi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;position:relative;overflow:hidden;transition:all .2s}
 .kpi-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:var(--shadow)}
 .kpi-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kc,var(--accent))}
@@ -169,7 +169,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .chart-wrap{position:relative;width:100%}
 
 /* SUMMARY CARDS (resumo do dia) */
-.summary-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:1rem}
+.summary-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1rem}
 .ss-card{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;transition:all .2s}
 .ss-card:hover{border-color:var(--border2);transform:translateY(-2px)}
 .ss-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;margin:0 auto .5rem}
@@ -232,7 +232,7 @@ tr:hover td{background:rgba(255,255,255,0.02)}
 .fuel-unit{font-size:10px;color:var(--text3)}
 
 /* COTAÇÕES ROW */
-.cot-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1.25rem}
+.cot-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:1.25rem}
 .cot-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;position:relative;overflow:hidden}
 .cot-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--cc,var(--accent))}
 .cot-flag{font-size:16px;margin-bottom:3px}
