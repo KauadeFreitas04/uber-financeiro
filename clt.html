@@ -521,6 +521,29 @@ tr:hover td{background:rgba(255,255,255,0.015)}
         <div class="toast err" id="launchToastErr"><i class="ti ti-x"></i> Erro ao salvar.</div>
       </div>
 
+      <!-- ORÇAMENTO POR CATEGORIA -->
+<div class="card" style="margin-bottom:1.25rem">
+  <div class="card-hd">
+    <div class="card-ttl"><i class="ti ti-wallet"></i> Orçamento mensal</div>
+    <button class="card-act" onclick="toggleOrcamento()">Editar limites</button>
+  </div>
+  <div id="orcamentoEdit" style="display:none;margin-bottom:1rem;padding:1rem;background:var(--bg2);border-radius:var(--radius-sm)">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px">Defina o limite mensal para cada categoria:</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="fg"><label>🍔 Alimentação</label><input type="number" id="orc-alimentacao" placeholder="0,00" style="height:36px"></div>
+      <div class="fg"><label>🚌 Transporte</label><input type="number" id="orc-transporte" placeholder="0,00" style="height:36px"></div>
+      <div class="fg"><label>🏠 Moradia</label><input type="number" id="orc-moradia" placeholder="0,00" style="height:36px"></div>
+      <div class="fg"><label>🎮 Lazer</label><input type="number" id="orc-lazer" placeholder="0,00" style="height:36px"></div>
+      <div class="fg"><label>🏥 Saúde</label><input type="number" id="orc-saude" placeholder="0,00" style="height:36px"></div>
+      <div class="fg"><label>💳 Cartão</label><input type="number" id="orc-cartao" placeholder="0,00" style="height:36px"></div>
+      <div class="fg"><label>📦 Outros</label><input type="number" id="orc-outros" placeholder="0,00" style="height:36px"></div>
+    </div>
+    <button onclick="saveOrcamento()" class="btn btn-primary" style="margin-top:12px;width:100%;justify-content:center"><i class="ti ti-device-floppy"></i> Salvar limites</button>
+    <div class="toast ok" id="orcToast" style="margin-top:8px"><i class="ti ti-check"></i> Limites salvos!</div>
+  </div>
+  <div id="orcamentoList"></div>
+</div>
+
       <div class="home-grid">
         <div class="history-wrap">
           <div class="history-hd">
@@ -685,6 +708,7 @@ async function initApp(){
   updateClock();setInterval(updateClock,1000);
   await loadProfile();
   await loadAll();
+  await loadOrcamento();
   loadCotacoes();setInterval(loadCotacoes,60000);
   setupKbd();
   if(!salario)document.getElementById('salarioSetup').style.display='block';
@@ -729,7 +753,7 @@ window.saveSalario=async()=>{
 
 async function loadAll(){
   await Promise.all([loadLaunches(),loadBills(),loadGoals()]);
-  updateKPIs();updateBudget();renderBillsList();renderGoalsList();renderCharts();renderHistToday();
+  updateKPIs();updateBudget();renderBillsList();renderGoalsList();renderCharts();renderHistToday();renderOrcamento();
 }
 
 async function loadLaunches(){
@@ -1055,6 +1079,65 @@ function renderGraficos(ml){
   bills.forEach(b=>{cats[b.cat]=(cats[b.cat]||0)+(b.val||0)});
   const ks=Object.keys(cats).filter(k=>cats[k]>0);
   charts['gpie']=new Chart(ctxP,{type:'doughnut',data:{labels:ks.map(k=>TYPES[k]?.label||k),datasets:[{data:ks.map(k=>cats[k]),backgroundColor:COLORS.slice(0,ks.length),borderWidth:2,borderColor:'var(--card)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8b909a',font:{size:11}}},tooltip:{callbacks:{label:c=>`${c.label}: ${fmtBRL(c.raw)}`}}},cutout:'60%'}});
+}
+
+  let orcamento={alimentacao:0,transporte:0,moradia:0,lazer:0,saude:0,cartao:0,outros:0};
+
+async function loadOrcamento(){
+  try{
+    const s=await getDoc(doc(db,`users/${user.uid}/clt_orcamento/dados`));
+    if(s.exists())orcamento={...orcamento,...s.data()};
+    ['alimentacao','transporte','moradia','lazer','saude','cartao','outros'].forEach(k=>{
+      const el=document.getElementById('orc-'+k);
+      if(el&&orcamento[k])el.value=orcamento[k];
+    });
+  }catch(e){}
+  renderOrcamento();
+}
+
+window.toggleOrcamento=()=>{
+  const el=document.getElementById('orcamentoEdit');
+  el.style.display=el.style.display==='none'?'block':'none';
+};
+
+window.saveOrcamento=async()=>{
+  ['alimentacao','transporte','moradia','lazer','saude','cartao','outros'].forEach(k=>{
+    const el=document.getElementById('orc-'+k);
+    if(el)orcamento[k]=+el.value||0;
+  });
+  try{
+    await setDoc(doc(db,`users/${user.uid}/clt_orcamento/dados`),{...orcamento,updatedAt:new Date().toISOString()});
+    const t=document.getElementById('orcToast');
+    if(t){t.style.display='flex';setTimeout(()=>t.style.display='none',2500)}
+    renderOrcamento();
+  }catch(e){alert('Erro ao salvar.')}
+};
+
+function renderOrcamento(){
+  const wrap=document.getElementById('orcamentoList');if(!wrap)return;
+  const mk=getMK();
+  const ml=launches.filter(l=>l.monthKey===mk&&!l.isIncome);
+  const cats=['alimentacao','transporte','moradia','lazer','saude','cartao','outros'];
+  const labels={alimentacao:'🍔 Alimentação',transporte:'🚌 Transporte',moradia:'🏠 Moradia',lazer:'🎮 Lazer',saude:'🏥 Saúde',cartao:'💳 Cartão',outros:'📦 Outros'};
+  const gastoPorCat={};
+  ml.forEach(l=>{gastoPorCat[l.type]=(gastoPorCat[l.type]||0)+(l.val||0)});
+  bills.forEach(b=>{gastoPorCat[b.cat]=(gastoPorCat[b.cat]||0)+(b.val||0)});
+  const rows=cats.map(k=>{
+    const gasto=gastoPorCat[k]||0;
+    const limite=orcamento[k]||0;
+    if(!gasto&&!limite)return'';
+    const pct=limite>0?Math.min(100,Math.round(gasto/limite*100)):0;
+    const color=pct>90?'var(--red)':pct>70?'var(--amber)':'var(--accent)';
+    return`<div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+        <span style="color:var(--text)">${labels[k]}</span>
+        <span style="color:${color};font-weight:600">${fmtBRL(gasto)}${limite>0?' / '+fmtBRL(limite):''}</span>
+      </div>
+      ${limite>0?`<div style="height:5px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${color};border-radius:3px;transition:width .5s"></div></div>`:
+      '<div style="height:5px;background:var(--bg3);border-radius:3px"></div>'}
+    </div>`;
+  }).join('');
+  wrap.innerHTML=rows||'<div style="text-align:center;color:var(--text3);font-size:13px;padding:1rem">Nenhum gasto registrado este mês.<br><span style="font-size:11px">Clique em "Editar limites" para definir seu orçamento.</span></div>';
 }
 
 window.setFluxoFilter=(f,btn)=>{
