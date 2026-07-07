@@ -706,13 +706,19 @@ async function loadProfile(){
   window.saveSalarioSetup=async()=>{
   const val=+document.getElementById('salarioSetupInput').value||0;
   if(!val){alert('Informe um salário válido.');return}
+  salario=val;
+  if(document.getElementById('salarioInput'))document.getElementById('salarioInput').value=val;
   try{
-    salario=val;
-    document.getElementById('salarioInput').value=val;
-    await setDoc(doc(db,pPath()),{salario,metaEcon,updatedAt:new Date().toISOString()});
+    await setDoc(doc(db,pPath()),{salario:val,metaEcon:metaEcon||0,updatedAt:new Date().toISOString()});
     document.getElementById('salarioSetup').style.display='none';
-    updateKPIs();updateBudget();
-  }catch(e){alert('Erro ao salvar salário.')}
+    updateKPIs();
+    updateBudget();
+  }catch(e){
+    console.error(e);
+    document.getElementById('salarioSetup').style.display='none';
+    updateKPIs();
+    updateBudget();
+  }
 };
 
 window.saveSalario=async()=>{
