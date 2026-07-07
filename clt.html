@@ -649,7 +649,7 @@ const todayKey=()=>fmtDate(new Date());
 const lPath=()=>`users/${user.uid}/clt_lancamentos`;
 const bPath=()=>`users/${user.uid}/clt_contas`;
 const gPath=()=>`users/${user.uid}/clt_metas`;
-const pPath=()=>`users/${user.uid}/clt_profile`;
+const pPath=()=>`users/${user.uid}/clt_perfil/dados`;
 
 function toast(id,msg){const el=document.getElementById(id);if(!el)return;if(msg){const m=document.getElementById(id+'Msg');if(m)m.textContent=msg}el.style.display='flex';setTimeout(()=>el.style.display='none',3000)}
 function dc(k){if(charts[k]){charts[k].destroy();delete charts[k]}}
