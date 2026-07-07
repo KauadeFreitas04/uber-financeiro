@@ -709,7 +709,7 @@ window.saveSalarioSetup=async()=>{
   try{
     salario=val;
     metaEcon=metaEcon||0;
-    const ref=doc(db,`users/${user.uid}/clt_profile`);
+    const ref=doc(db,`users/${user.uid}/clt_perfil/dados`);
     await setDoc(ref,{salario:val,metaEcon:metaEcon,updatedAt:new Date().toISOString()});
     if(document.getElementById('salarioInput'))document.getElementById('salarioInput').value=val;
     document.getElementById('salarioSetup').style.display='none';
