@@ -119,10 +119,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .sb-uarrow{color:var(--text3);font-size:14px}
 
 /* MAIN */
-.main{flex:1;margin-left:210px;min-height:100vh;display:flex;flex-direction:column;background:var(--bg);min-width:0;max-width:calc(100vw - 210px);overflow-x:hidden}
+.main{flex:1;margin-left:210px;min-height:100vh;display:flex;flex-direction:column;background:var(--bg);min-width:0;max-width:calc(100vw - 210px);overflow-x:hidden;overflow-y:auto}
 
 /* TICKER */
-.ticker-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:6px 0;overflow:hidden;position:relative}
+.ticker-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:6px 0;overflow:hidden;position:relative;width:100%}
 .ticker-bar::before{content:'';position:absolute;left:0;top:0;bottom:0;width:40px;background:linear-gradient(to right,var(--bg2),transparent);z-index:1}
 .ticker-bar::after{content:'';position:absolute;right:0;top:0;bottom:0;width:40px;background:linear-gradient(to left,var(--bg2),transparent);z-index:1}
 .ticker-track{display:flex;animation:ticker 40s linear infinite;width:max-content}
