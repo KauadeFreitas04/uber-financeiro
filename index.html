@@ -858,7 +858,7 @@ async function loadCotacoes(){
     if(d.XAUBRL)items.push({l:'Ouro',v:'R$ '+parseFloat(d.XAUBRL.bid).toFixed(0),p:d.XAUBRL.pctChange});
     const html=items.map(i=>{const up=parseFloat(i.p)>=0;return`<div class="ticker-item"><span class="t-lbl">${i.l}</span><span class="t-val">${i.v}</span><span class="t-chg ${up?'t-up':'t-down'}">${up?'+':''}${parseFloat(i.p).toFixed(2)}%</span></div>`}).join('');
     const track=document.getElementById('tickerTrack');
-    if(track)track.innerHTML=html+html;
+    if(track)track.innerHTML=html+html+html+html;
   }catch(e){}
 }
 
