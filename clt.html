@@ -681,7 +681,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open')}
 window.openModal=openModal;window.closeModal=closeModal;
 
 window.fazerLogin=async()=>{try{await signInWithPopup(auth,provider)}catch(e){alert('Erro: '+e.message)}};
-window.fazerLogout=async()=>{if(confirm('Sair?'))await signOut(auth)};
+window.fazerLogout=async()=>{if(confirm('Sair?')){await signOut(auth);window.location.href='index.html'}};
 
 onAuthStateChanged(auth,async u=>{
   if(u){
