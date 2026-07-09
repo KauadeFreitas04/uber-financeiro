@@ -361,6 +361,35 @@ tr:hover td{background:rgba(255,255,255,0.015)}
       <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
       Continuar com Google
     </button>
+    <div class="login-div">ou</div>
+    <div id="authForms">
+      <div id="formLogin">
+        <div class="fg" style="margin-bottom:10px"><label>Email</label><input type="email" id="authEmail" placeholder="seu@email.com"></div>
+        <div class="fg" style="margin-bottom:14px"><label>Senha</label><input type="password" id="authPass" placeholder="Sua senha"></div>
+        <button onclick="loginEmail()" style="width:100%;height:42px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:8px">Entrar</button>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px">
+          <span style="color:var(--accent);cursor:pointer" onclick="showForm('cadastro')">Criar conta</span>
+          <span style="color:var(--text3);cursor:pointer" onclick="showForm('reset')">Esqueci minha senha</span>
+        </div>
+      </div>
+      <div id="formCadastro" style="display:none">
+        <div class="fg" style="margin-bottom:10px"><label>Nome</label><input type="text" id="authNome" placeholder="Seu nome completo"></div>
+        <div class="fg" style="margin-bottom:10px"><label>Email</label><input type="email" id="authEmailCad" placeholder="seu@email.com"></div>
+        <div class="fg" style="margin-bottom:14px"><label>Senha</label><input type="password" id="authPassCad" placeholder="Mínimo 6 caracteres"></div>
+        <button onclick="cadastrarEmail()" style="width:100%;height:42px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:8px">Criar conta</button>
+        <div style="font-size:12px;text-align:center;margin-top:4px">
+          <span style="color:var(--text3)">Já tem conta? </span><span style="color:var(--accent);cursor:pointer" onclick="showForm('login')">Entrar</span>
+        </div>
+      </div>
+      <div id="formReset" style="display:none">
+        <div class="fg" style="margin-bottom:14px"><label>Email</label><input type="email" id="authEmailReset" placeholder="seu@email.com"></div>
+        <button onclick="resetSenha()" style="width:100%;height:42px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:8px">Enviar link de recuperação</button>
+        <div style="font-size:12px;text-align:center;margin-top:4px">
+          <span style="color:var(--accent);cursor:pointer" onclick="showForm('login')">← Voltar</span>
+        </div>
+      </div>
+      <div id="authMsg" style="font-size:13px;margin-top:10px;padding:8px 12px;border-radius:6px;display:none"></div>
+    </div>
     <div class="login-div">recursos</div>
     <div class="login-feats">
       <div class="lf-item"><i class="ti ti-bolt"></i><span><strong>Rápido</strong> — registre em menos de 5 segundos</span></div>
@@ -658,7 +687,7 @@ tr:hover td{background:rgba(255,255,255,0.015)}
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={apiKey:"AIzaSyB6ntWpg-bABC3ilSsvxX_h5t2Wyyod0zY",authDomain:"vida-financeira-f71f1.firebaseapp.com",projectId:"vida-financeira-f71f1",storageBucket:"vida-financeira-f71f1.firebasestorage.app",messagingSenderId:"23242994809",appId:"1:23242994809:web:a03d7f33a1df7fb82510a8"};
@@ -714,6 +743,61 @@ function closeModal(id){document.getElementById(id).classList.remove('open')}
 window.openModal=openModal;window.closeModal=closeModal;
 
 window.fazerLogin=async()=>{try{await signInWithPopup(auth,provider)}catch(e){alert('Erro: '+e.message)}};
+
+window.showForm=form=>{
+  ['formLogin','formCadastro','formReset'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('form'+form.charAt(0).toUpperCase()+form.slice(1)).style.display='block';
+  document.getElementById('authMsg').style.display='none';
+};
+
+function showAuthMsg(msg,ok=false){
+  const el=document.getElementById('authMsg');
+  el.textContent=msg;
+  el.style.display='block';
+  el.style.background=ok?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)';
+  el.style.color=ok?'var(--green)':'var(--red)';
+  el.style.border=ok?'1px solid rgba(34,197,94,0.2)':'1px solid rgba(239,68,68,0.2)';
+}
+
+window.loginEmail=async()=>{
+  const email=document.getElementById('authEmail').value.trim();
+  const pass=document.getElementById('authPass').value;
+  if(!email||!pass){showAuthMsg('Preencha email e senha.');return}
+  try{await signInWithEmailAndPassword(auth,email,pass)}
+  catch(e){
+    if(e.code==='auth/user-not-found')showAuthMsg('Usuário não encontrado.');
+    else if(e.code==='auth/wrong-password')showAuthMsg('Senha incorreta.');
+    else showAuthMsg('Erro: '+e.message);
+  }
+};
+
+window.cadastrarEmail=async()=>{
+  const nome=document.getElementById('authNome').value.trim();
+  const email=document.getElementById('authEmailCad').value.trim();
+  const pass=document.getElementById('authPassCad').value;
+  if(!nome||!email||!pass){showAuthMsg('Preencha todos os campos.');return}
+  if(pass.length<6){showAuthMsg('Senha deve ter pelo menos 6 caracteres.');return}
+  try{
+    const cred=await createUserWithEmailAndPassword(auth,email,pass);
+    await cred.user.updateProfile({displayName:nome});
+    showAuthMsg('Conta criada com sucesso!',true);
+  }catch(e){
+    if(e.code==='auth/email-already-in-use')showAuthMsg('Este email já está cadastrado.');
+    else showAuthMsg('Erro: '+e.message);
+  }
+};
+
+window.resetSenha=async()=>{
+  const email=document.getElementById('authEmailReset').value.trim();
+  if(!email){showAuthMsg('Informe seu email.');return}
+  try{
+    await sendPasswordResetEmail(auth,email);
+    showAuthMsg('Link enviado! Verifique seu email.',true);
+  }catch(e){
+    if(e.code==='auth/user-not-found')showAuthMsg('Email não encontrado.');
+    else showAuthMsg('Erro: '+e.message);
+  }
+};
 window.fazerLogout=async()=>{if(confirm('Deseja sair?'))await signOut(auth)};
 
 window.selectProfile=async profile=>{
