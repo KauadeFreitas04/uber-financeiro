@@ -814,7 +814,10 @@ window.openModal=openModal;window.closeModal=closeModal;
 
 // AUTH
 window.fazerLogin=async()=>{try{await signInWithPopup(auth,provider)}catch(e){alert('Erro: '+e.message)}};
-window.fazerLogout=async()=>{if(confirm('Deseja sair?'))await signOut(auth)};
+window.fazerLogout=async()=>{
+  if(!await showConfirm('Deseja sair da sua conta?'))return;
+  await signOut(auth);
+};
 
 window.showForm=form=>{
   ['formLogin','formCadastro','formReset'].forEach(id=>document.getElementById(id).style.display='none');
@@ -873,7 +876,7 @@ window.selectProfile=async profile=>{
 };
 
 window.changeProfile=async()=>{
-  if(!confirm('Alterar perfil?'))return;
+  if(!await showConfirm('Deseja alterar seu perfil?'))return;
   try{await setDoc(doc(db,profilePath()),{profile:null})}catch(e){}
   closeModal('settingsModal');
   document.getElementById('appMotorista').classList.remove('active');
@@ -921,6 +924,26 @@ function initApp(profile){
   populateSelects();loadBillsCache();
   loadCotacoes();setInterval(loadCotacoes,60000);
   loadHomeData();loadMeta();setupKeyboard();
+}
+
+  function showConfirm(msg){
+  return new Promise(resolve=>{
+    const overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+    overlay.innerHTML=`<div style="background:#141720;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.75rem;max-width:360px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.6);text-align:center">
+      <div style="width:44px;height:44px;background:rgba(239,68,68,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:20px">🗑️</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:6px">Confirmar ação</div>
+      <div style="font-size:13px;color:#8b909a;margin-bottom:1.5rem;line-height:1.5">${msg}<br>Esta ação não pode ser desfeita.</div>
+      <div style="display:flex;gap:10px">
+        <button id="confirmNo" style="flex:1;height:40px;background:transparent;color:#8b909a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">Cancelar</button>
+        <button id="confirmYes" style="flex:1;height:40px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">Confirmar</button>
+      </div>
+    </div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#confirmYes').onclick=()=>{document.body.removeChild(overlay);resolve(true)};
+    overlay.querySelector('#confirmNo').onclick=()=>{document.body.removeChild(overlay);resolve(false)};
+    overlay.onclick=e=>{if(e.target===overlay){document.body.removeChild(overlay);resolve(false)}};
+  });
 }
 
 function getGreeting(){const h=new Date().getHours();return h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'}
@@ -1089,7 +1112,7 @@ function renderHistory(items){
 }
 
 window.deleteLaunch=async id=>{
-  if(!confirm('Remover?'))return;
+  if(!await showConfirm('Remover este lançamento?'))return;
   try{
     await deleteDoc(doc(db,launchPath()+'/'+id));
     await rebuildDailyAgg(todayKey());
@@ -1218,7 +1241,7 @@ window.addBill=async()=>{
   }catch(e){alert('Erro.')}
 };
 window.deleteBill=async id=>{
-  if(!confirm('Remover?'))return;
+  if(!await showConfirm('Remover esta conta?'))return;
   try{await deleteDoc(doc(db,billsPath()+'/'+id));billsCache=billsCache.filter(b=>b.id!==id);renderBills()}catch(e){}
 };
 window.toggleBillPaid=async(id,mkey)=>{
