@@ -344,7 +344,7 @@ tr:hover td{background:rgba(255,255,255,0.015)}
 
 /* RESPONSIVE */
 @media(max-width:1024px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.home-grid{grid-template-columns:1fr}}
-@media(max-width:900px){.sidebar{transform:translateX(-100%)}.main{margin-left:0;max-width:100vw}.kpi-strip{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0;max-width:100vw}.kpi-strip{grid-template-columns:repeat(2,1fr)}#mobileNav{display:flex !important}}
 @media(max-width:768px){.login-screen{grid-template-columns:1fr}.login-left{display:none}.login-right{border:none;background:var(--bg)}}
 @media(max-width:540px){.kpi-strip{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.profile-cards{grid-template-columns:1fr}.launch-input{font-size:28px}}
 </style>
@@ -544,7 +544,11 @@ tr:hover td{background:rgba(255,255,255,0.015)}
   </div>
 
   <div class="main">
-    <div class="ticker-bar"><div class="ticker-track" id="tickerTrack"></div></div>
+    <div style="display:none;align-items:center;gap:10px;padding:.75rem 1rem;background:var(--bg2);border-bottom:1px solid var(--border)" id="mobileNav">
+      <button onclick="toggleSidebar()" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:22px;padding:4px"><i class="ti ti-menu-2"></i></button>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#fff">Flux</div>
+    </div>
+<div class="ticker-bar"><div class="ticker-track" id="tickerTrack"></div></div>
 
     <!-- TOPBAR -->
     <div class="topbar" style="display:flex;align-items:flex-start;justify-content:space-between;padding:1.5rem 2rem 1rem">
@@ -945,6 +949,9 @@ function initApp(profile){
     overlay.onclick=e=>{if(e.target===overlay){document.body.removeChild(overlay);resolve(false)}};
   });
 }
+  window.toggleSidebar=()=>{
+  document.querySelector('.sidebar').classList.toggle('open');
+};
 
 function getGreeting(){const h=new Date().getHours();return h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'}
 
