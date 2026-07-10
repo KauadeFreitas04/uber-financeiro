@@ -486,8 +486,8 @@ tr:hover td{background:rgba(255,255,255,0.015)}
       </div>
 
       <div class="launch-card">
-        <div class="launch-header-title">💸 Gastou algo hoje?</div>
-          <div class="launch-header-sub">Registre aqui qualquer gasto ou receita extra — leva menos de 5 segundos.</div>
+        <div class="launch-header-title" style="font-size:18px;font-weight:700">Registrar lançamento</div>
+          <div class="launch-header-sub">Selecione a categoria e informe o valor.</div>
         <div class="launch-types">
           <button class="lt-btn active" onclick="setType('receita')" id="lt-receita" style="--lt-color:var(--accent)"><i class="ti ti-plus"></i> Receita extra</button>
           <button class="lt-btn" onclick="setType('moradia')" id="lt-moradia" style="--lt-color:var(--blue)"><i class="ti ti-home"></i> Moradia</button>
@@ -499,7 +499,7 @@ tr:hover td{background:rgba(255,255,255,0.015)}
           <button class="lt-btn" onclick="setType('outros')" id="lt-outros" style="--lt-color:var(--text2)"><i class="ti ti-package"></i> Outros</button>
         </div>
         <div class="launch-body">
-          <div class="launch-lbl" id="launchLabel">Quanto você gastou? (ou recebeu)</div>
+          <div class="launch-lbl" id="launchLabel">Valor</div>
           <div class="launch-val-row">
             <div class="launch-prefix">R$</div>
             <input class="launch-input" type="number" id="launchVal" placeholder="0,00" min="0" step="0.01">
