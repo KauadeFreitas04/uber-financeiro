@@ -864,6 +864,26 @@ async function initApp(){
   setupKbd();
 }
 
+  function showConfirm(msg){
+  return new Promise(resolve=>{
+    const overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+    overlay.innerHTML=`<div style="background:#141720;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.75rem;max-width:360px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.6);text-align:center">
+      <div style="width:44px;height:44px;background:rgba(239,68,68,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:20px">🗑️</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:6px">Confirmar remoção</div>
+      <div style="font-size:13px;color:#8b909a;margin-bottom:1.5rem;line-height:1.5">${msg}<br>Esta ação não pode ser desfeita.</div>
+      <div style="display:flex;gap:10px">
+        <button id="confirmNo" style="flex:1;height:40px;background:transparent;color:#8b909a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">Cancelar</button>
+        <button id="confirmYes" style="flex:1;height:40px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">Remover</button>
+      </div>
+    </div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#confirmYes').onclick=()=>{document.body.removeChild(overlay);resolve(true)};
+    overlay.querySelector('#confirmNo').onclick=()=>{document.body.removeChild(overlay);resolve(false)};
+    overlay.onclick=e=>{if(e.target===overlay){document.body.removeChild(overlay);resolve(false)}};
+  });
+}
+
 function greeting(){const h=new Date().getHours();return h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'}
 
 function updateClock(){
@@ -1003,7 +1023,7 @@ window.addMovimentacao=async()=>{
 };
 
 window.deleteLaunch=async id=>{
-  if(!confirm('Remover?'))return;
+  if(!await showConfirm('Remover este lançamento?'))return;
   try{await deleteDoc(doc(db,lPath()+'/'+id));launches=launches.filter(l=>l.id!==id);updateKPIs();updateBudget();renderCharts();renderHistToday();renderHistFull()}catch(e){}
 };
 
@@ -1064,7 +1084,7 @@ window.addBill=async()=>{
 };
 
 window.deleteBill=async id=>{
-  if(!confirm('Remover?'))return;
+  if(!await showConfirm('Remover esta conta fixa?'))return;
   try{await deleteDoc(doc(db,bPath()+'/'+id));bills=bills.filter(b=>b.id!==id);renderBillsList();renderBillsTable();updateKPIs();updateBudget()}catch(e){}
 };
 
@@ -1128,7 +1148,7 @@ window.addGoal=async()=>{
 };
 
 window.deleteGoal=async id=>{
-  if(!confirm('Remover?'))return;
+  if(!await showConfirm('Remover esta meta?'))return;
   try{await deleteDoc(doc(db,gPath()+'/'+id));goals=goals.filter(g=>g.id!==id);renderGoalsList();renderGoalsPage();updateKPIs()}catch(e){}
 };
 
